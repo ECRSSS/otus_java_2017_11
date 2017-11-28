@@ -9,16 +9,24 @@ import java.util.Random;
  */
 public class MemoryStand {
     private final int mb = 1024 * 1024;
-    private long freeMemoryPrev;
+    private long memoryPrev;
     private Runtime runtime;
 
     public MemoryStand() {
         this.runtime = Runtime.getRuntime();
-        freeMemoryPrev = runtime.freeMemory();
-        System.out.println("Start -free memory: " + getMemoryString(freeMemoryPrev));
+        System.out.println("Start -allocated memory: " + getMemoryString(memoryPrev));
     }
     public void calculatePrimitiveTypesMemory(Class cl)
     {
+        memoryPrev = runtime.totalMemory()-runtime.freeMemory();
+        try
+        {
+            System.gc();
+            Thread.sleep(500);
+        }catch (InterruptedException e)
+        {
+            e.printStackTrace();return;
+        }
         System.out.println("for " + cl.getName().replace("java.lang.",""));
         int size=1_000_000;
         switch (cl.getName())
@@ -99,12 +107,29 @@ public class MemoryStand {
                 System.out.println("Для ссылочных типов используйте функцию calculateReferenceTypesMemory");
                 break;
         }
+        try
+        {
+            System.gc();
+            Thread.sleep(500);
+        }catch (InterruptedException e)
+        {
+            e.printStackTrace();return;
+        }
         System.out.println("----------------");
 
     }
 
     public void calculateReferenceTypesMemory(Class cl)
     {
+        memoryPrev = runtime.totalMemory()-runtime.freeMemory();
+        try
+        {
+            System.gc();
+            Thread.sleep(500);
+        }catch (InterruptedException e)
+        {
+            e.printStackTrace();return;
+        }
         try {
             System.out.println("for " + cl);
             int size = 1000000;
@@ -123,29 +148,26 @@ public class MemoryStand {
             System.out.println("Ошибка: Передайте класс ссылочного типа");
         }
 
+        try
+        {
+            System.gc();
+            Thread.sleep(500);
+        }catch (InterruptedException e)
+        {
+            e.printStackTrace();return;
+        }
+
     }
 
     private void showCurrentAllocatedMemory(long objects) {
-        long freeMemoryNow = runtime.freeMemory();
-        long allocatedMemory = freeMemoryPrev - freeMemoryNow;
+        long allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
         System.out.println("Allocate: " + getMemoryString(allocatedMemory) + " for "+objects+" objects");
     }
 
     private void showMemoryForObject(long objects)
     {
-        long freeMemoryNow = runtime.freeMemory();
-        long allocatedMemory = freeMemoryPrev - freeMemoryNow;
+        long allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
         System.out.println("for one object: "+getMemoryString(allocatedMemory/objects));
-    }
-
-    public void refresh()
-    {
-        try {
-            System.gc();
-            Thread.sleep(1000);
-            freeMemoryPrev = runtime.freeMemory();
-        }catch (InterruptedException e)
-        {e.printStackTrace();}
     }
 
     private String getMemoryString(long memory)
