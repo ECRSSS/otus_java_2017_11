@@ -192,4 +192,47 @@ public class MemoryStand {
     {
         return String.format("%.8f", ((double)memory)/mb)+"mb("+memory+"byte)";
     }
+    public void calcAndShowMemoryOfCollections()
+    {
+        for(int i=1;i<2000;i+=200) {
+            long mem = runtime.totalMemory() - runtime.freeMemory();
+            String[] arr = new String[i];
+            long mem2 = runtime.totalMemory() - runtime.freeMemory();
+            System.out.println("for collection of "+i+"elements allocates: " + (mem2 - mem) + " bytes");
+            System.gc();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("-----------------");
+        for(int i=1;i<2000;i+=200) {
+            long mem = runtime.totalMemory() - runtime.freeMemory();
+            Object[] arr = new Object[i];
+            long mem2 = runtime.totalMemory() - runtime.freeMemory();
+            System.out.println("for collection of "+i+"elements allocates: " + (mem2 - mem) + " bytes");
+            System.gc();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("-----------------");
+        for(int i=1;i<2000;i+=200) {
+            long mem = runtime.totalMemory() - runtime.freeMemory();
+            Random[] arr = new Random[i];
+            long mem2 = runtime.totalMemory() - runtime.freeMemory();
+            System.out.println("for collection of "+i+" elements allocates: " + (mem2 - mem) + " bytes");
+            System.gc();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("-----------------");
+
+    }
 }

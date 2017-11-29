@@ -10,6 +10,9 @@ public class Main {
     public static void main(String[] args) throws IllegalAccessException,InstantiationException
     {
         MemoryStand memoryStand=new MemoryStand();
+
+        memoryStand.calcAndShowMemoryOfCollections();
+
         memoryStand.calculatePrimitiveTypesMemory(Boolean.class);
         memoryStand.calculatePrimitiveTypesMemory(Integer.class);
         memoryStand.calculatePrimitiveTypesMemory(Short.class);
@@ -22,6 +25,7 @@ public class Main {
         memoryStand.calculateReferenceTypesMemory(Object.class);
         memoryStand.calculateReferenceTypesMemory(String.class);
         memoryStand.calculateReferenceTypesMemory(Random.class);
+
 
     }
 }
