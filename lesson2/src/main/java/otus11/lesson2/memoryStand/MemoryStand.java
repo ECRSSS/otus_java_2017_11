@@ -9,16 +9,15 @@ import java.util.Random;
  */
 public class MemoryStand {
     private final int mb = 1024 * 1024;
-    private long memoryPrev;
     private Runtime runtime;
 
     public MemoryStand() {
         this.runtime = Runtime.getRuntime();
-        System.out.println("Start -allocated memory: " + getMemoryString(memoryPrev));
+        System.out.println("Start -allocated memory: " + getMemoryString(runtime.totalMemory()-runtime.freeMemory()));
     }
     public void calculatePrimitiveTypesMemory(Class cl)
     {
-        memoryPrev = runtime.totalMemory()-runtime.freeMemory();
+        long memoryPrev = runtime.totalMemory()-runtime.freeMemory();
         try
         {
             System.gc();
@@ -29,6 +28,7 @@ public class MemoryStand {
         }
         System.out.println("for " + cl.getName().replace("java.lang.",""));
         int size=1_000_000;
+        long allocatedMemory=0;
         switch (cl.getName())
         {
             case "java.lang.Float":
@@ -37,8 +37,9 @@ public class MemoryStand {
                 {
                     a[i]=0;
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             case "java.lang.Boolean":
                 boolean b[]=new boolean[size];
@@ -46,8 +47,9 @@ public class MemoryStand {
                 {
                     b[i]=false;
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             case "java.lang.Byte":
                 byte c[]=new byte[size];
@@ -55,8 +57,9 @@ public class MemoryStand {
                 {
                     c[i]=0;
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             case "java.lang.Short":
                 short d[]=new short[size];
@@ -64,8 +67,9 @@ public class MemoryStand {
                 {
                     d[i]=0;
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             case "java.lang.Integer":
                 int f[]=new int[size];
@@ -73,8 +77,9 @@ public class MemoryStand {
                 {
                     f[i]=0;
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             case "java.lang.Long":
                 long e[]=new long[size];
@@ -82,8 +87,9 @@ public class MemoryStand {
                 {
                     e[i]=0;
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             case "java.lang.Character":
                 char t[]=new char[size];
@@ -91,8 +97,9 @@ public class MemoryStand {
                 {
                     t[i]='a';
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             case "java.lang.Double":
                 double y[]=new double[size];
@@ -100,8 +107,9 @@ public class MemoryStand {
                 {
                     y[i]=0;
                 }
-                showCurrentAllocatedMemory(size);
-                showMemoryForObject(size);
+                allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+                showCurrentAllocatedMemory(size,allocatedMemory);
+                showMemoryForObject(size,allocatedMemory);
                 break;
             default:
                 System.out.println("Для ссылочных типов используйте функцию calculateReferenceTypesMemory");
@@ -121,7 +129,7 @@ public class MemoryStand {
 
     public void calculateReferenceTypesMemory(Class cl)
     {
-        memoryPrev = runtime.totalMemory()-runtime.freeMemory();
+        long memoryPrev = runtime.totalMemory()-runtime.freeMemory();
         try
         {
             System.gc();
@@ -137,8 +145,10 @@ public class MemoryStand {
             for (int i = 0; i < size; i++) {
                 array[i] = cl.newInstance();
             }
-            showCurrentAllocatedMemory(size);
-            showMemoryForObject(size);
+            long allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+            showCurrentAllocatedMemory(size,allocatedMemory);
+            showMemoryForObject(size,allocatedMemory);
+            showMemoryForDifferentSizes(size,allocatedMemory);
             System.out.println("------------------");
         }catch (IllegalAccessException e)
         {
@@ -159,14 +169,22 @@ public class MemoryStand {
 
     }
 
-    private void showCurrentAllocatedMemory(long objects) {
-        long allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
+    private void showCurrentAllocatedMemory(long objects,long allocatedMemory) {
         System.out.println("Allocate: " + getMemoryString(allocatedMemory) + " for "+objects+" objects");
     }
 
-    private void showMemoryForObject(long objects)
+    private void showMemoryForDifferentSizes(long objects,long allocatedMemory) {
+        long memOneObj=allocatedMemory/objects;
+        System.out.println("Allocate: " + getMemoryString(memOneObj*5) + " for 5 objects");
+        System.out.println("Allocate: " + getMemoryString(memOneObj*10) + " for 10 objects");
+        System.out.println("Allocate: " + getMemoryString(memOneObj*25) + " for 25 objects");
+        System.out.println("Allocate: " + getMemoryString(memOneObj*100) + " for 100 objects");
+        System.out.println("Allocate: " + getMemoryString(memOneObj*200) + " for 200 objects");
+
+    }
+
+    private void showMemoryForObject(long objects,long allocatedMemory)
     {
-        long allocatedMemory = (runtime.totalMemory()-runtime.freeMemory())-memoryPrev;
         System.out.println("for one object: "+getMemoryString(allocatedMemory/objects));
     }
 
