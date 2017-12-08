@@ -18,7 +18,8 @@ public class Main {
         cl1.add(3);
         cl1.add(3);
         cl1.add(3);
-        CustomList<Integer> cl2=new CustomList<Integer>(5);
+        System.out.println(cl1);
+        CustomList<Integer> cl2=new CustomList<Integer>(cl1.size());
         Collections.copy(cl2,cl1);
         Collections.addAll(cl2,1,2,3);
         cl2.sort((a, b) -> a.compareTo(b));

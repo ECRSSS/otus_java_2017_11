@@ -7,11 +7,13 @@ import java.util.*;
  */
 public class CustomList<E> implements List<E> {
     private int size;
+    private int realSize;
+
     private Object[] arrObj;
 
     public CustomList()
     {
-        arrObj=new Object[0];
+        arrObj=new Object[10];
     }
 
     @Override
@@ -20,10 +22,14 @@ public class CustomList<E> implements List<E> {
         stringBuilder.append("[");
         for(Object o : arrObj)
         {
-                stringBuilder.append(o+",");
+            if(o!=null) {
+                stringBuilder.append(o + ",");
+            }
         }
         stringBuilder.append("]");
-        stringBuilder.replace(stringBuilder.lastIndexOf(","),stringBuilder.lastIndexOf("]"),"");
+        try {
+            stringBuilder.replace(stringBuilder.lastIndexOf(","), stringBuilder.lastIndexOf("]"), "");
+        }catch (Exception e){}
         return stringBuilder.toString();
     }
 
@@ -35,21 +41,7 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public E remove(int index) {
-
-        E result=(E)arrObj[index];
-        arrObj[index]=null;
-        Object[] newArr=new Object[arrObj.length-1];
-        int i=0;
-        for(Object obj : arrObj)
-        {
-            if(obj!=null) {
-                newArr[i] = obj;
-                i++;
-            }
-        }
-        this.arrObj=newArr;
-        this.size--;
-        return result;
+    return null;
     }
 
     @Override
@@ -106,7 +98,7 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        return arrObj;
+        return Arrays.copyOfRange(arrObj,0,realSize);
     }
 
     @Override
@@ -127,16 +119,18 @@ public class CustomList<E> implements List<E> {
             if(arrObj[i]==null)
             {
                 arrObj[i]=e;
+                realSize++;
                 return true;
             }
         }
-        Object[] newArr=new Object[arrObj.length+1];
+        size=(arrObj.length*3)/2;
+        Object[] newArr=new Object[size];
         for (int i=0;i<arrObj.length;i++)
         {
             newArr[i]=arrObj[i];
         }
-        newArr[size] = e;
-        size++;
+        newArr[realSize] = e;
+        realSize++;
         arrObj=newArr;
         return true;
     }
