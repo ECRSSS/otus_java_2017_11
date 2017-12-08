@@ -11,31 +11,32 @@ import java.util.Comparator;
 public class Main {
     public static void main(String[] args)
     {
-
-        CustomList<Integer> cl1=new CustomList<Integer>();
-        cl1.add(5);
-        cl1.add(2);
-        cl1.add(3);
-        cl1.add(3);
-        cl1.add(3);
-        System.out.println(cl1);
-        CustomList<Integer> cl2=new CustomList<Integer>(cl1.size());
-        Collections.copy(cl2,cl1);
-        Collections.addAll(cl2,1,2,3);
-        cl2.sort((a, b) -> a.compareTo(b));
-        Collections.sort(cl1);
-        System.out.println(cl1);
-        System.out.println(cl2);
-
-        CustomList<Integer> cl=new CustomList<Integer>(4);
-        System.out.println(cl);
-        cl.add(5);
-        System.out.println(cl);
-        cl.add(5);
-        System.out.println(cl);
-        cl.add(5);
-        System.out.println(cl);
+        CustomList<Integer> list1=new CustomList<Integer>();
+        boolean result = list1.add(null);
+        System.out.println(result);
+        System.out.println(list1);
 
 
+
+        CustomList<Integer> list=new CustomList<Integer>();
+        list.add(3);
+        list.add(2);
+        list.add(1);
+
+        for(Integer n : list){
+            System.out.print(n + " ");
+        }
+        System.out.println();
+        System.out.println(list);
+        Collections.sort(list);
+        System.out.println(list);
+
+        Collections.addAll(list,1,2,3);
+        System.out.println(list);
+
+        CustomList<Integer> cl=new CustomList<Integer>(list.size());
+        Collections.copy(cl,list);
+
+        System.out.println(cl);
     }
 }

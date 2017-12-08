@@ -6,7 +6,6 @@ import java.util.*;
  * Created by Administrator on 06.12.2017.
  */
 public class CustomList<E> implements List<E> {
-    private int size;
     private int realSize;
 
     private Object[] arrObj;
@@ -36,7 +35,6 @@ public class CustomList<E> implements List<E> {
     public CustomList(int size)
     {
         arrObj=new Object[size];
-        this.size=size;
     }
 
     @Override
@@ -56,7 +54,7 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public ListIterator<E> listIterator(int index) {
-        if (index < 0 || index > size)
+        if (index < 0 || index > realSize)
             throw new IndexOutOfBoundsException("Index: "+index);
         return new ListIter(index);
     }
@@ -73,14 +71,14 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public int size() {
-        return size;
+        if(realSize==0)
+            return arrObj.length;
+        return realSize;
     }
 
     @Override
     public boolean isEmpty() {
-        if(size==0)
-            return true;
-        return false;
+        return realSize==0;
     }
 
     @Override
@@ -103,18 +101,20 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public <T> T[] toArray(T[] a) {
-        if (a.length < size)
+        if (a.length < realSize)
             // Make a new array of a's runtime type, but my contents:
-            return (T[]) Arrays.copyOf(arrObj, size, a.getClass());
-        System.arraycopy(arrObj, 0, a, 0, size);
-        if (a.length > size)
-            a[size] = null;
+            return (T[]) Arrays.copyOf(arrObj,realSize , a.getClass());
+        System.arraycopy(arrObj, 0, a, 0, realSize);
+        if (a.length > realSize)
+            a[realSize] = null;
         return a;
     }
 
     @Override
     public boolean add(E e) {
-        for (int i=0;i<size;i++)
+        if(e==null){System.out.println("Невозможно добавить null");
+            return false;}
+        for (int i=0;i<arrObj.length;i++)
         {
             if(arrObj[i]==null)
             {
@@ -123,7 +123,7 @@ public class CustomList<E> implements List<E> {
                 return true;
             }
         }
-        size=(arrObj.length*3)/2;
+        int size=(arrObj.length*3)/2;
         Object[] newArr=new Object[size];
         for (int i=0;i<arrObj.length;i++)
         {
@@ -137,20 +137,20 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
         Object[] a=c.toArray();
         int numNew=a.length;
-        System.arraycopy(a, 0, arrObj, size, numNew);
-        size += numNew;
+        System.arraycopy(a, 0, arrObj, realSize, numNew);
+        realSize += numNew;
         return numNew != 0;
     }
 
@@ -159,13 +159,13 @@ public class CustomList<E> implements List<E> {
 
         Object[] a = c.toArray();
         int numNew = a.length;
-        int numMoved = size - index;
+        int numMoved = realSize - index;
         if (numMoved > 0)
             System.arraycopy(arrObj, index, arrObj, index + numNew,
                     numMoved);
 
         System.arraycopy(a, 0, arrObj, index, numNew);
-        size += numNew;
+        realSize += numNew;
         return numNew != 0;
     }
 
@@ -184,12 +184,12 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void clear() {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class CustomList<E> implements List<E> {
             newArr[i]=arrObj[i];
         }
         newArr[newArr.length-1]=element;
-        size++;
+        realSize++;
     }
 
     private class Iter implements Iterator<E>
@@ -224,12 +224,12 @@ public class CustomList<E> implements List<E> {
 
         @Override
         public boolean hasNext() {
-            return cursor!=size;
+            return cursor!=realSize;
         }
 
         @Override
         public E next() {
-            if (cursor >= size)
+            if (cursor >= realSize)
                 throw new NoSuchElementException();
             last=cursor;
             E e= (E)CustomList.this.arrObj[cursor];
