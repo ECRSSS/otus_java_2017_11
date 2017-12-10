@@ -71,8 +71,6 @@ public class CustomList<E> implements List<E> {
 
     @Override
     public int size() {
-        if(realSize==0)
-            return arrObj.length;
         return realSize;
     }
 

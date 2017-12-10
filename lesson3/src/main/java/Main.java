@@ -11,6 +11,10 @@ import java.util.Comparator;
 public class Main {
     public static void main(String[] args)
     {
+
+
+
+
         CustomList<Integer> list1=new CustomList<Integer>();
         boolean result = list1.add(null);
         System.out.println(result);
@@ -32,9 +36,16 @@ public class Main {
         System.out.println(list);
 
         Collections.addAll(list,1,2,3);
+        Collections.sort(list);
         System.out.println(list);
-
+        System.out.println("-----");
         CustomList<Integer> cl=new CustomList<Integer>(list.size());
+        cl.add(4);
+        cl.add(4);
+        cl.add(4);
+        cl.add(4);
+        cl.add(4);
+        cl.add(4);
         Collections.copy(cl,list);
 
         System.out.println(cl);
