@@ -11,8 +11,10 @@ public class Main {
         ArrayList<Random> ar=new ArrayList<>();
         for(long i=0;i<Long.MAX_VALUE;i++)
         {
-
             ar.add(new Random());
+            ar.add(new Random());
+            ar.remove(i-1);
+            System.out.println(ar.size());
         }
     }
 }
