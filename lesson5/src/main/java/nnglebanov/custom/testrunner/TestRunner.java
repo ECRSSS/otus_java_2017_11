@@ -31,7 +31,6 @@ public class TestRunner {
             ArrayList<Method> methodsAfter = new ArrayList<>();
 
             ArrayList<Method> methods = new ArrayList<Method>(Arrays.asList(c.getDeclaredMethods()));
-            Object obj = c.newInstance();
 
             for (Method a : methods) {
                 if (a.isAnnotationPresent(Before.class)) {
@@ -46,6 +45,7 @@ public class TestRunner {
             methodsBefore.sort((Method m1, Method m2) -> m1.getName().compareTo(m2.getName()));
             methodsAfter.sort((Method m1, Method m2) -> m1.getName().compareTo(m2.getName()));
             for (Method test : methodsTest) {
+                Object obj = c.newInstance();
                 for (Method before : methodsBefore) {
                     before.invoke(obj, null);
                 }
