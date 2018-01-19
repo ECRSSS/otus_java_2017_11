@@ -1,5 +1,8 @@
 package ATM;
 
+import ATM.Middleware.Check50Middleware;
+import ATM.Middleware.CheckMoneyIsOpenMiddleware;
+import ATM.Middleware.Middleware;
 import ATM.Money.NeededMoney;
 import ATM.Parts.BanknotesCell;
 import Banknotes.Banknote;
@@ -58,16 +61,9 @@ public class Atm implements Cloneable {
     }
     public void getMoney(int money)
     {
-        NeededMoney neededMoney=new NeededMoney(money);
-        for(BanknotesCell cell : cells)
-        {
-            cell.getMoney(neededMoney);
-        }
-        if(neededMoney.isOpen())
-        {
-            this.addMoney(neededMoney.getBanknotes());
-            System.out.println("Сумма не может быть выдана из-за нехватки банкнот");
-        }
+        Middleware middleware=new Check50Middleware();
+        middleware.linkWith(new CheckMoneyIsOpenMiddleware());
+        middleware.check(money,cells,this);
     }
 
     public int getState()

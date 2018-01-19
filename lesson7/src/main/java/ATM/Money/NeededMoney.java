@@ -16,7 +16,6 @@ public class NeededMoney {
 
     public NeededMoney(int money)
     {
-        if(!Support.moneyCheck(money)){return;}
         this.money=money;
         if(money>0)
         {

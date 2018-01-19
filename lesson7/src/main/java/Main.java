@@ -15,14 +15,14 @@ public class Main {
     {
         AtmDep atmDep=AtmDep.getAtmDepartmentInstance();
         atmDep.addAtmWithMoney(4,2,2,1,1);
-        atmDep.addAtmWithMoney(3,1,4,2,5);
-        atmDep.addAtmWithMoney(4,9,2,1,0);
+       // atmDep.addAtmWithMoney(3,1,4,2,5);
+       // atmDep.addAtmWithMoney(4,9,2,1,0);
 
         Atm atm1=atmDep.getAtm(0);
         atm1.getState();
-        atm1.getMoney(15000);
+        atm1.getMoney(45000);
         atmDep.getCurrentMoneyState();
-        atmDep.setAllAtmsToStartState();
-        atmDep.getCurrentMoneyState();
+       // atmDep.setAllAtmsToStartState();
+       // atmDep.getCurrentMoneyState();
     }
 }
