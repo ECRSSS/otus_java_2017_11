@@ -13,6 +13,8 @@ public class Main {
         executor.save(new UserDataSet(2,"John",44));
 
         UserDataSet dataSet= executor.load(1,UserDataSet.class);
+        executor.closeConnection();
+
         System.out.println(dataSet.getName());
         System.out.println(dataSet.getAge());
         System.out.println(dataSet.getId());

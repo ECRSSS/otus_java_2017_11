@@ -14,13 +14,14 @@ public class ConnectionHelper {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
 
             String url = "jdbc:mysql://" +
-                    "130.211.80.126:" +
+                    "localhost:" +
                     "3306/" +
                     "test?" +
                     "user=root&" +
-                    "password=1&" +
+                    "password=1111&" +
 
-                    "useSSL=false";
+                    "useSSL=false" +
+                    "&serverTimezone=UTC";
 
 
             return DriverManager.getConnection(url);

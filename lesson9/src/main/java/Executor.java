@@ -3,10 +3,7 @@ import MyORM.DataSet;
 import MyORM.Parser.Parser;
 import MyORM.UserDataSet;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Created by Administrator on 2/1/2018.
@@ -19,17 +16,23 @@ public class Executor {
             this.connection=connection;
         }
 
+        public void closeConnection()
+        {
+            try {
+                connection.close();
+            }catch (SQLException e){e.printStackTrace();}
+        }
+
         public <T extends DataSet> void save(T user){ //сохранение в базу
             try {
-                Statement statem = connection.createStatement();
-                String sql = Parser.parseInsert(user);
-                if (sql == null) {
-                    return;
-                }
+                try(Statement statem = connection.createStatement()) {
+                    PreparedStatement preparedStatement = Parser.parseInsert(user,connection);
+                    if (preparedStatement == null) {
+                        return;
+                    }
 
-                statem.execute(sql);
-                statem.close();
-                connection.close();
+                    preparedStatement.execute();
+                }
             }catch (SQLException e){e.printStackTrace();}
         }
 
@@ -39,24 +42,22 @@ public class Executor {
            try
            {
 
-               Statement statem = connection.createStatement();
-               Table table = clazz.getAnnotation(Table.class);
-               if(table==null)
-               {
-                   System.out.println("Класс не подходит для хранения данных");
-                   return null;
+               try(Statement statem = connection.createStatement()) {
+                   Table table = clazz.getAnnotation(Table.class);
+                   if (table == null) {
+                       System.out.println("Класс не подходит для хранения данных");
+                       return null;
+                   }
+                   String tableName = table.value();
+                   String sql = "SELECT * from "+tableName+" WHERE id= ?;";
+                   PreparedStatement preparedStatement=connection.prepareStatement(sql);
+                   preparedStatement.setLong(1,id);
+                   preparedStatement.execute();
+                   try(ResultSet resultSet = preparedStatement.getResultSet()) {
+
+                       t = Parser.parseIntoObject(resultSet, clazz);
+                   }
                }
-               String tableName=table.value();
-               String sql="SELECT * from "+tableName+" WHERE id="+id+";";
-               statem.execute(sql);
-               ResultSet resultSet=statem.getResultSet();
-
-               t = Parser.parseIntoObject(resultSet, clazz);
-
-
-               resultSet.close();
-               statem.close();
-               connection.close();
            }catch (SQLException e){e.printStackTrace();}
            return t;
         }

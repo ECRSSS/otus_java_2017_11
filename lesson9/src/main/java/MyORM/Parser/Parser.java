@@ -8,6 +8,8 @@ import Support.NumericValidator;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,8 +19,9 @@ import java.util.ArrayList;
  */
 public class Parser {
 
-    public static <T extends DataSet> String parseInsert(T  user)
+    public static <T extends DataSet> PreparedStatement parseInsert(T  user,Connection connection)
     {
+        PreparedStatement preparedStatement=null;
         Class clazz=user.getClass();
         Table table = (Table) clazz.getAnnotation(Table.class);
         if(table==null)
@@ -32,18 +35,14 @@ public class Parser {
 
         StringBuilder columns=new StringBuilder();
         StringBuilder values=new StringBuilder();
-
+        ArrayList<Field> flds=new ArrayList<>();
         for(Field field:allFields) {
             if(field.isAnnotationPresent(Column.class))
             {
                 field.setAccessible(true);
                 columns.append(field.getName()+',');
-                try {
-                    values.append('"');
-                    values.append(field.get(user));
-                    values.append('"');
-                    values.append(',');
-                }catch (IllegalAccessException e){e.printStackTrace();}
+                values.append("?,");
+                flds.add(field);
             }
         }
         columns.setLength(columns.length()-1);
@@ -51,9 +50,17 @@ public class Parser {
 
         String sql="INSERT INTO "+DBtable+" ("+columns.toString()+") VALUES ("+values.toString()+");";
         System.out.println(sql);
-        return sql;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            for(int i=0;i<flds.size();i++)
+            {
+                preparedStatement.setString(i+1,flds.get(i).get(user).toString());
+            }
+        }catch (SQLException|IllegalAccessException e){e.printStackTrace();}
+        return preparedStatement;
 
     }
+
 
     public static <T extends DataSet>T parseIntoObject(ResultSet resultSet,Class clazz)
     {
