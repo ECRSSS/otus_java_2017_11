@@ -24,7 +24,6 @@ public class DBServiceImpl implements DBService {
         configuration.addAnnotatedClass(UserDataSet.class);
         configuration.addAnnotatedClass(AddressDataSet.class);
 
-
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/test");
@@ -56,10 +55,11 @@ public class DBServiceImpl implements DBService {
         });
     }
 
-    public void save(UserDataSet dataSet) {
-        try (Session session = sessionFactory.openSession()) {
-            session.save(dataSet);
-        }
+    public boolean save(UserDataSet dataSet) {
+        return runInSession(session -> {
+            UserDataSetDAO dao = new UserDataSetDAO(session);
+            return dao.save(dataSet);
+        });
     }
 
     public UserDataSet read(long id) {

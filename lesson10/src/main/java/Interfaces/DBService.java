@@ -10,7 +10,7 @@ import java.util.List;
 public interface DBService {
     String getLocalStatus();
 
-    void save(UserDataSet dataSet);
+    boolean save(UserDataSet dataSet);
 
     UserDataSet read(long id);
 

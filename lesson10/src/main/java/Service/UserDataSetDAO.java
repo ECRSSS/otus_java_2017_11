@@ -20,8 +20,11 @@ public class UserDataSetDAO {
         this.session = session;
     }
 
-    public void save(UserDataSet dataSet) {
+    public boolean save(UserDataSet dataSet) {
+        try{
         session.save(dataSet);
+        }catch (Exception e){return false;}
+        return true;
     }
 
     public UserDataSet read(long id) {

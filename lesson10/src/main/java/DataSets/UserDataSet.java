@@ -14,6 +14,7 @@ public class UserDataSet extends DataSet {
     @OneToOne(cascade = CascadeType.ALL)
     private AddressDataSet addressDataSet;
 
+
     @Column(name = "name")
     private String name;
 
