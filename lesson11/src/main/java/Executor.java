@@ -1,8 +1,7 @@
-import Cache.CacheWorker;
+import Cache.CacheEngine;
 import MyORM.Annotations.Table;
 import MyORM.DataSet;
 import MyORM.Parser.Parser;
-import MyORM.UserDataSet;
 
 import java.sql.*;
 
@@ -11,18 +10,19 @@ import java.sql.*;
  */
 public class Executor {
         private final Connection connection;
-        private CacheWorker cache;
+        private CacheEngine cache;
 
         public Executor(Connection connection)
         {
             this.connection=connection;
-            this.cache=CacheWorker.getInstance();
+            this.cache=new CacheEngine(5,1000,0,false);
         }
 
         public void closeConnection()
         {
             try {
                 connection.close();
+                cache.dispose();
             }catch (SQLException e){e.printStackTrace();}
         }
 
@@ -35,7 +35,7 @@ public class Executor {
                     }
 
                     preparedStatement.execute();
-                    cache.putIntoCache(user);
+                    cache.put(user,user.getId());
                 }
             }catch (SQLException e){e.printStackTrace();}
         }
@@ -53,9 +53,10 @@ public class Executor {
                        return null;
                    }
 
-                   DataSet fromCache=cache.getFromCache(id);
+                   DataSet fromCache=cache.get(id);
                    if(fromCache!=null)
                    {
+                       fromCache.setAccessed();
                        return (T)fromCache;
                    }else {
                        String tableName = table.value();
@@ -73,4 +74,12 @@ public class Executor {
            }catch (SQLException e){e.printStackTrace();}
            return t;
         }
+
+    public int getHitCount() {
+        return cache.getHitCount();
+    }
+
+    public int getMissCount() {
+        return cache.getMissCount();
+    }
 }

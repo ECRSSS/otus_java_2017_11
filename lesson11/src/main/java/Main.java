@@ -1,4 +1,5 @@
 import Connection.ConnectionHelper;
+import MyORM.DataSet;
 import MyORM.Parser.Parser;
 import MyORM.UserDataSet;
 
@@ -10,13 +11,21 @@ public class Main {
     public static void main(String[] args)
     {
         Executor executor=new Executor(ConnectionHelper.getConnection());
-        executor.save(new UserDataSet(100,"John",44));
 
-        UserDataSet dataSet= executor.load(100,UserDataSet.class);
+        for(int i=402;i<500;i++)
+        {
+            executor.save(new UserDataSet(i,"John",44));
+
+            System.out.println(i+"--------->");
+            System.out.println("Hit: "+executor.getHitCount());
+            System.out.println("Miss: "+executor.getMissCount());
+
+            try{Thread.sleep(100);}
+            catch (InterruptedException e){e.printStackTrace();}
+            DataSet ds=executor.load(i,UserDataSet.class);
+
+        }
         executor.closeConnection();
 
-        System.out.println(dataSet.getName());
-        System.out.println(dataSet.getAge());
-        System.out.println(dataSet.getId());
     }
 }

@@ -10,6 +10,25 @@ public abstract class DataSet {
     private long id;
     public long getId(){return id;}
 
+    private final long creationTime;
+    private long lastAccessTime;
 
-    DataSet(long id){this.id=id;}
+
+    DataSet(long id){this.id=id;
+        this.creationTime = System.currentTimeMillis();
+        this.lastAccessTime = System.currentTimeMillis();
+    }
+
+    public void setAccessed() {
+        lastAccessTime = System.currentTimeMillis();
+    }
+
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    public long getLastAccessTime() {
+        return lastAccessTime;
+    }
+
 }

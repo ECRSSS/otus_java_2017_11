@@ -65,31 +65,34 @@ public class Parser {
     public static <T extends DataSet>T parseIntoObject(ResultSet resultSet,Class clazz)
     {
         Field[] allFields=getFields(clazz);
-        Class[] constructorFields=new Class[allFields.length];
+        ArrayList<Class> cFields=new ArrayList<>();
         for(int i=0;i<allFields.length;i++)
         {
-            constructorFields[i]=allFields[i].getType();
+            if(allFields[i].isAnnotationPresent(Column.class))
+            {cFields.add(allFields[i].getType());}
         }
+        Class[] constructorFields=cFields.toArray(new Class[cFields.size()]);
         try {
 
             while (resultSet.next()) {
                 try {
-                    Object[] parameters=new Object[constructorFields.length];
-                    for(int i=0;i<parameters.length;i++)
+                    ArrayList<Object> parameters=new ArrayList<>();
+                    for(Field field:allFields)
                     {
-                        String param=resultSet.getString(allFields[i].getAnnotation(Column.class).value());
-                        if(NumericValidator.tryParseInt(param))
-                        {
-                            parameters[i]=new Integer(Integer.parseInt(param));
-                            continue;
-                        }else
-                        {
-                            parameters[i]=param;
+                        if(field.isAnnotationPresent(Column.class)) {
+                            String param = resultSet.getString(field.getAnnotation(Column.class).value());
+                            if (NumericValidator.tryParseInt(param)) {
+                                parameters.add(new Integer(Integer.parseInt(param)));
+                                continue;
+                            } else {
+                                parameters.add(param);
+                            }
                         }
 
                     }
+                    Object[] prs=parameters.toArray(new Object[parameters.size()]);
                     Constructor constructor=clazz.getConstructor(constructorFields);
-                    return (T)constructor.newInstance(parameters);
+                    return (T)constructor.newInstance(prs);
                 }catch (InstantiationException|NoSuchMethodException|IllegalAccessException|InvocationTargetException e){e.printStackTrace();}
             }
 
@@ -105,6 +108,9 @@ public class Parser {
         Field[] allFields= new Field[parentFields.length+fields.length];
         System.arraycopy(parentFields, 0, allFields, 0, parentFields.length);
         System.arraycopy(fields, 0, allFields, parentFields.length, fields.length);
+
+
+
         return allFields;
     }
 
