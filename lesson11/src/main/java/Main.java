@@ -12,16 +12,21 @@ public class Main {
     {
         Executor executor=new Executor(ConnectionHelper.getConnection());
 
-        for(int i=402;i<500;i++)
+        for(int i=802;i<900;i++)
         {
             executor.save(new UserDataSet(i,"John",44));
 
             System.out.println(i+"--------->");
             System.out.println("Hit: "+executor.getHitCount());
             System.out.println("Miss: "+executor.getMissCount());
+            DataSet ds=executor.load(i,UserDataSet.class);
 
-            try{Thread.sleep(100);}
-            catch (InterruptedException e){e.printStackTrace();}
+        }
+        for(int i=602;i<700;i++)
+        {
+            System.out.println(i+"--------->");
+            System.out.println("Hit: "+executor.getHitCount());
+            System.out.println("Miss: "+executor.getMissCount());
             DataSet ds=executor.load(i,UserDataSet.class);
 
         }

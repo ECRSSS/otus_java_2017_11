@@ -68,6 +68,7 @@ public class Executor {
 
                            t = Parser.parseIntoObject(resultSet, clazz);
                        }
+                       cache.put(t,t.getId());
                    }
 
                }

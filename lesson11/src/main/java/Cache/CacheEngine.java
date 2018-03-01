@@ -2,6 +2,7 @@ package Cache;
 
 import MyORM.DataSet;
 
+import java.lang.ref.SoftReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -9,7 +10,7 @@ import java.util.TimerTask;
 import java.util.function.Function;
 
 
-public class CacheEngine {
+public class CacheEngine<T extends DataSet> implements CacheEngineInterface<T> {
     private static final int TIME_THRESHOLD_MS = 5;
 
     private final int maxElements;
@@ -17,7 +18,7 @@ public class CacheEngine {
     private final long idleTimeMs;
     private final boolean isEternal;
 
-    private final Map<Long, DataSet> elements = new LinkedHashMap<>();
+    private final Map<Long, SoftReference<T>> elements = new LinkedHashMap<>(100);
     private final Timer timer = new Timer();
 
     private int hit = 0;
@@ -30,13 +31,14 @@ public class CacheEngine {
         this.isEternal = lifeTimeMs == 0 && idleTimeMs == 0 || isEternal;
     }
 
-    public void put(DataSet element,Long key) {
+    public void put(T element,Long key) {
         if (elements.size() == maxElements) {
             Long firstKey = elements.keySet().iterator().next();
             elements.remove(firstKey);
         }
 
-        elements.put(key, element);
+        SoftReference<T> elm=new SoftReference<T>(element);
+        elements.put(key, elm);
         System.out.println("Запись попала в кэш");
 
         if (!isEternal) {
@@ -51,16 +53,18 @@ public class CacheEngine {
         }
     }
 
-    public DataSet get(Long key) {
-        DataSet element = elements.get(key);
+    public T get(Long key) {
+        SoftReference<T> element = elements.get(key);
+        T elm=null;
         if (element != null) {
             hit++;
+            elm=element.get();
+            System.out.println("Запись возвращена из кэша");
         } else {
             miss++;
         }
-        System.out.println("Запись возвращена из кэша");
 
-        return element;
+        return elm;
     }
 
     public int getHitCount() {
@@ -75,12 +79,12 @@ public class CacheEngine {
         timer.cancel();
     }
 
-    private TimerTask getTimerTask(final Long key, Function<DataSet, Long> timeFunction) {
+    private TimerTask getTimerTask(final Long key, Function<T, Long> timeFunction) {
         return new TimerTask() {
             @Override
             public void run() {
-                DataSet element = elements.get(key);
-                if (element == null || isT1BeforeT2(timeFunction.apply(element), System.currentTimeMillis())) {
+                SoftReference<T> element = elements.get(key);
+                if (element == null || isT1BeforeT2(timeFunction.apply(element.get()), System.currentTimeMillis())) {
                     elements.remove(key);
                     this.cancel();
                 }
