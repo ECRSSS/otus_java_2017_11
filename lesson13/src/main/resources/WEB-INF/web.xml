@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+
+    <display-name>Lesson 13</display-name>
+    <description>Lesson 13 Homework</description>
+
+    <servlet>
+        <servlet-name>cachePanelServlet</servlet-name>
+        <servlet-class>Jetty.CachePanelServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>loginServlet</servlet-name>
+        <servlet-class>Jetty.LoginServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>cachePanelServlet</servlet-name>
+        <url-pattern>/cache</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>loginServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+
+</web-app>
