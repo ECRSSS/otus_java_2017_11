@@ -34,6 +34,7 @@ public class CachePanelServlet extends HttpServlet {
         context = new AnnotationConfigApplicationContext(AppConfiguration.class);
         dbExecutor = (DBExecutor) context.getBean("dbExecutorBean");
         dbExecutor.save(new UserDataSet(1025,"json",15));
+        dbExecutor.load(1025,UserDataSet.class);
     }
 
 

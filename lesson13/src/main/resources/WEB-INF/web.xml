@@ -7,12 +7,12 @@
 
     <servlet>
         <servlet-name>cachePanelServlet</servlet-name>
-        <servlet-class>Jetty.CachePanelServlet</servlet-class>
+        <servlet-class>Otus.Jetty.CachePanelServlet</servlet-class>
     </servlet>
 
     <servlet>
         <servlet-name>loginServlet</servlet-name>
-        <servlet-class>Jetty.LoginServlet</servlet-class>
+        <servlet-class>Otus.Jetty.LoginServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

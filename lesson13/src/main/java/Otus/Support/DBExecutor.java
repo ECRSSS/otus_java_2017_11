@@ -1,6 +1,7 @@
 package Otus.Support;
 
 import Otus.Cache.CacheEngine;
+import Otus.Connection.ConnectionHelper;
 import Otus.MyORM.Annotations.Table;
 import Otus.MyORM.DataSet;
 import Otus.MyORM.Parser.Parser;
@@ -19,8 +20,8 @@ public class DBExecutor {
     @Autowired
     private CacheEngine cache;
 
-    public DBExecutor(Connection connection) {
-        this.connection = connection;
+    public DBExecutor() {
+        connection=ConnectionHelper.getConnection();
     }
 
     public void closeConnection() {
